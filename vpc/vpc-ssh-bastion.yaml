@@ -33,8 +33,7 @@ Parameters:
     Default: ''
   KeyName:
     Description: 'Optional key pair of the ec2-user to establish a SSH connection to the SSH bastion host/instance.'
-    Type: String
-    Default: ''
+    Type: AWS::EC2::KeyPair::KeyName
   IAMUserSSHAccess:
     Description: 'Synchronize public keys of IAM users to enable personalized SSH access (Doc: https://cloudonaut.io/manage-aws-ec2-ssh-access-with-iam/).'
     Type: String
@@ -91,7 +90,7 @@ Mappings:
     'us-west-2':
       AMI: 'ami-e689729e'
 Conditions:
-  HasKeyName: !Not [!Equals [!Ref KeyName, '']]
+  # HasKeyName: !Not [!Equals [!Ref KeyName, '']]
   HasIAMUserSSHAccess: !Equals [!Ref IAMUserSSHAccess, 'true']
   HasNewRelic: !Not [!Equals [!Ref NewRelicLicenseKey, '']]
   HasAlertTopic: !Not [!Equals [!Ref ParentAlertStack, '']]
@@ -403,7 +402,8 @@ Resources:
       InstanceType: !Ref InstanceType
       SecurityGroups:
       - !Ref SecurityGroup
-      KeyName: !If [HasKeyName, !Ref KeyName, !Ref 'AWS::NoValue']
+      # KeyName: !If [HasKeyName, !Ref KeyName, !Ref 'AWS::NoValue']
+      KeyName: !Ref KeyName
       UserData:
         'Fn::Base64': !Sub |
           #!/bin/bash -x
